@@ -83,12 +83,26 @@ namespace libomtnet
         {
             lock (lockSync)
             {
-                if (socket != null)
+                if (socket == null)
                 {
-                    if (socket.SendAsync(e) == false)
-                    {
-                        OnCompleted(this, e);
-                    }
+                    ReturnEventArgs(e);
+                    return;
+                }
+
+                bool pending;
+                try
+                {
+                    pending = socket.SendAsync(e);
+                }
+                catch
+                {
+                    ReturnEventArgs(e);
+                    throw;
+                }
+
+                if (!pending)
+                {
+                    OnCompleted(this, e);
                 }
             }
         }
