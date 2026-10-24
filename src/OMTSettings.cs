@@ -44,6 +44,10 @@ namespace libomtnet
     /// 
     /// NetworkPortEnd[integer] specify the last port to create Send instances on.Defaults to 6600
     /// 
+    /// NetworkSendBufferSize[integer] TCP send buffer requested in bytes for each connection of a new Sender. Defaults to 65536.
+    /// Valid values are 65536 through 4194304 (64 KiB through 4 MiB); other values use the default. The operating system may adjust the request.
+    /// Set before creating a Sender. Existing Senders retain their value for future connections. Receiver and discovery-server buffers are unchanged.
+    ///
     /// </summary>
     public class OMTSettings
     {

@@ -31,6 +31,22 @@ These are platform specific native shared libraries. The correct library for the
 3. Send using OMTSend.Send
 4. That's it, the source is now available on the network for receivers to connect to
 
+### TCP Send Buffer
+
+Set `NetworkSendBufferSize` before creating a sender to request a different TCP
+send buffer for each of its connections:
+
+```csharp
+OMTSettings.GetInstance().SetInteger("NetworkSendBufferSize", 524288); // 512 KiB
+```
+
+Native SDK clients can use `omt_settings_set_integer("NetworkSendBufferSize", 524288)`.
+The default remains 65536 bytes. Values outside 65536–4194304 bytes use the default.
+Each sender keeps its setting for later connections; existing senders, receivers
+and discovery-server buffers are unaffected. The OS may adjust the request; the
+connection log reports the requested and actual sizes. Larger buffers can absorb
+brief stalls but may increase queued latency during congestion.
+
 ### Creating a Receiver
 
 1. Create an instance of the OMTReceive class specifying the full name of the source (including machine name)

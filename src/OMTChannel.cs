@@ -68,12 +68,18 @@ namespace libomtnet
         public IPEndPoint RemoteEndPoint { get { return endPoint; } }
         
         public OMTChannel(Socket sck, OMTFrameType receiveFrameType, AutoResetEvent frameReady, AutoResetEvent metadataReady, bool metadataServer)
+            : this(sck, receiveFrameType, frameReady, metadataReady, metadataServer, OMTConstants.NETWORK_SEND_BUFFER)
+        {
+        }
+
+        public OMTChannel(Socket sck, OMTFrameType receiveFrameType, AutoResetEvent frameReady, AutoResetEvent metadataReady, bool metadataServer, int sendBufferSize)
         {
             socket = sck;
             endPoint = (IPEndPoint)sck.RemoteEndPoint;
 
             socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
-            socket.SendBufferSize = OMTConstants.NETWORK_SEND_BUFFER;
+            socket.SendBufferSize = sendBufferSize;
+            OMTLogging.Write("SendBufferSize: requested=" + sendBufferSize + ", actual=" + socket.SendBufferSize, "OMTChannel");
             if (receiveFrameType == OMTFrameType.Metadata)
             {
                 socket.ReceiveBufferSize = OMTConstants.NETWORK_SEND_RECEIVE_BUFFER;

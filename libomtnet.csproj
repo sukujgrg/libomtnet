@@ -8,4 +8,8 @@
     <Version>1.0.0.20</Version>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="tests/**/*.cs" />
+  </ItemGroup>
+
 </Project>

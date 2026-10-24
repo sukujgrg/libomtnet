@@ -44,6 +44,7 @@ namespace libomtnet
         private object channelsLock = new object();
         private OMTDiscovery discovery;
         private OMTDiscoveryServer discoveryServer;
+        private readonly int sendBufferSize = OMTConstants.NETWORK_SEND_BUFFER;
 
         private OMTFrame tempVideo;
         private OMTFrame tempAudio;
@@ -99,6 +100,15 @@ namespace libomtnet
             OMTSettings settings = OMTSettings.GetInstance();
             int startPort = settings.GetInteger("NetworkPortStart", OMTConstants.NETWORK_PORT_START);
             int endPort = settings.GetInteger("NetworkPortEnd", OMTConstants.NETWORK_PORT_END);
+            int bufferSize = settings.GetInteger("NetworkSendBufferSize", OMTConstants.NETWORK_SEND_BUFFER);
+            if (bufferSize >= 65536 && bufferSize <= 4194304)
+            {
+                sendBufferSize = bufferSize;
+            }
+            else
+            {
+                OMTLogging.Write("Invalid NetworkSendBufferSize: " + bufferSize + "; using " + sendBufferSize, "OMTSend");
+            }
 
             for (int i = startPort; i <= endPort; i++)
             {
@@ -361,7 +371,7 @@ namespace libomtnet
                     try
                     {
                         socket = e.AcceptSocket;
-                        channel = new OMTChannel(socket, OMTFrameType.Metadata, null, metadataHandle, metadataServer);
+                        channel = new OMTChannel(socket, OMTFrameType.Metadata, null, metadataHandle, metadataServer, sendBufferSize);
                         channel.StartReceive();
                         if (senderInfoXml != null)
                         {
